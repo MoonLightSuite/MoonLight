@@ -203,7 +203,8 @@ class DeserializerTest {
                 "\n" +
                 "}\n";
 
-        Deserializer.SPATIO_TEMPORAL_SIGNAL.deserialize(json);
+        SpatioTemporalSignalWrapper deserialize = Deserializer.SPATIO_TEMPORAL_SIGNAL.deserialize(json);
+        System.out.println(deserialize.getSpatioTemporalSignal());
 
 
     }

@@ -11,18 +11,27 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class SpatioTemporalSignalDeserializer implements JsonDeserializer<SpatioTemporalSignal> {
+public class SpatioTemporalSignalDeserializer implements JsonDeserializer<SpatioTemporalSignalWrapper> {
     @Override
-    public SpatioTemporalSignal deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        JsonObject jso = json.getAsJsonObject();
-        JsonObject signalType = jso.get("signal_type").getAsJsonObject();
-        Function<Object[], Assignment> toAssignment = getAssignment(getSignalsType(signalType));
+    public SpatioTemporalSignalWrapper deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        SpatioTemporalSignal spatioTemporalSignal = getSignal(json);
+        return new SpatioTemporalSignalWrapper(spatioTemporalSignal, null);
+    }
 
-        JsonObject edgesType = jso.get("edge_type").getAsJsonObject();
+    private SpatioTemporalSignal getSignal(JsonElement json) {
+        JsonObject jso = json.getAsJsonObject();
+        JsonObject signalType = getAsJsonObject(jso, "signal_type");
+        Function<Object[], Assignment> toAssignment = getAssignment(getSignalsType(signalType));
+        JsonObject edgesType = getAsJsonObject(jso, "edge_type");
         JsonArray nodes = jso.get("nodes").getAsJsonArray();
+        List<String> locations = IntStream.range(0, nodes.size()).mapToObj(nodes::get).map(JsonElement::getAsString).collect(Collectors.toList());
+
+        if (isLocationServiceStatic(jso)) {
+
+        }
+
         JsonArray trajectory = jso.get("trajectory").getAsJsonArray();
         SpatioTemporalSignal<Assignment> spatioTemporalSignal = new SpatioTemporalSignal<>(nodes.size());
-        List<String> locations = IntStream.range(0, nodes.size()).mapToObj(nodes::get).map(JsonElement::getAsString).collect(Collectors.toList());
         ArrayList<String> variables = new ArrayList<>(signalType.keySet());
         for (int i = 0; i < trajectory.size(); i++) {
             JsonObject jsonElement = trajectory.get(i).getAsJsonObject();
@@ -32,6 +41,7 @@ public class SpatioTemporalSignalDeserializer implements JsonDeserializer<Spatio
         }
         return spatioTemporalSignal;
     }
+
 
     private Object[] getValues(JsonObject object, List<String> keys) {
         return keys.stream().map(object::get).toArray();
@@ -43,6 +53,14 @@ public class SpatioTemporalSignalDeserializer implements JsonDeserializer<Spatio
 
     private Class<?>[] getSignalsType(JsonObject jso) {
         return jso.keySet().stream().map(jso::get).map(s -> JSONUtils.getVariableType(s.getAsString())).toArray(Class<?>[]::new);
+    }
+
+    private JsonObject getAsJsonObject(JsonObject jsonObject, String key) {
+        return jsonObject.get(key).getAsJsonObject();
+    }
+
+    private boolean isLocationServiceStatic(JsonObject jsonObject) {
+        return jsonObject.keySet().contains("edges");
     }
 
 

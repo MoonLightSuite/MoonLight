@@ -6,7 +6,7 @@ import eu.quanticol.moonlight.signal.VariableArraySignal;
 public class Deserializer {
 
     public static final DeserializerFunction<VariableArraySignal> VARIABLE_ARRAY_SIGNAL = getVariableArraySignalDeserializer();
-    public static final DeserializerFunction<SpatioTemporalSignal> SPATIO_TEMPORAL_SIGNAL = getSpatioTemporalSignalDeserializer();
+    public static final DeserializerFunction<SpatioTemporalSignalWrapper> SPATIO_TEMPORAL_SIGNAL = getSpatioTemporalSignalDeserializer();
 
 
     private Deserializer() {
@@ -18,8 +18,8 @@ public class Deserializer {
         return variableArraySignalJSONReader.getDeserializer();
     }
 
-    private static DeserializerFunction<SpatioTemporalSignal> getSpatioTemporalSignalDeserializer() {
-        JSONReader<SpatioTemporalSignal> variableArraySignalJSONReader = new JSONReader<>(new SpatioTemporalSignalDeserializer(), SpatioTemporalSignal.class);
-        return variableArraySignalJSONReader.getDeserializer();
+    private static DeserializerFunction<SpatioTemporalSignalWrapper> getSpatioTemporalSignalDeserializer() {
+        JSONReader<SpatioTemporalSignalWrapper> spatioTemporalSignalWrapperJSONReader = new JSONReader<>(new SpatioTemporalSignalDeserializer(), SpatioTemporalSignalWrapper.class);
+        return spatioTemporalSignalWrapperJSONReader.getDeserializer();
     }
 }
