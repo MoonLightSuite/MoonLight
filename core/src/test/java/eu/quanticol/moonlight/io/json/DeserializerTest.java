@@ -1,211 +1,25 @@
 package eu.quanticol.moonlight.io.json;
 
+import eu.quanticol.moonlight.signal.SpatioTemporalSignal;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+import static org.junit.jupiter.api.Assertions.fail;
 
 class DeserializerTest {
 
 
     @Test
     void testReadTemporalSignal() {
-        String json= "{\n" +
-                "\t\"trace_type\": \"spatio_temporal\",\n" +
-                "\t\"signal_type\": {\"x\": \"boolean\", \"y\": \"real\", \"z\":\"integer\", \"name\": \"string\"},\n" +
-                "  \"edge_type\": { \"time\": \"real\", \"length\": \"real\" }, \n" +
-                "  \"nodes\": [ \"l1\", \"l2\", \"l3\", \"l4\", \"l5\"],\n" +
-                "  \"trajectory\": [\n" +
-                "\t\t{\n" +
-                "\t\t  \"time\": 0.0 , \n" +
-                "\t\t  \"signals\": {\n" +
-                "  \t\t\t\"l1\":  {\"x\": true, \"y\":0.25, \"z\":23, \"name\":\"taxi\"},\n" +
-                "  \t\t\t\"l2\":  {\"x\": true, \"y\":0.25, \"z\":23, \"name\":\"house\"},\n" +
-                "  \t\t\t\"l3\":  {\"x\": true, \"y\":0.25, \"z\":23, \"name\":\"museum\"},\n" +
-                "  \t\t\t\"l4\":  {\"x\": true, \"y\":0.25, \"z\":23, \"name\":\"stop\"},\n" +
-                "  \t\t\t\"l5\":  {\"x\": true, \"y\":0.25, \"z\":23, \"name\":\"start\"}\n" +
-                "\t\t  },\n" +
-                "\t\t\t\"edges\": {\n" +
-                "\t\t\t    \"l1\": [\n" +
-                "\t\t\t        {\n" +
-                "\t\t\t          \"label\": { \"time\": 1.5, \"length\": 10 },\n" +
-                "\t\t\t          \"dest\": \"l2\"\n" +
-                "\t\t\t        },\n" +
-                "\t\t\t        {\n" +
-                "\t\t\t          \"label\": { \"time\": 2.5, \"length\": 15 },\n" +
-                "\t\t\t          \"dest\": \"l3\"\n" +
-                "\t\t\t        }\n" +
-                "\t\t\t    ],\n" +
-                "\t\t\t    \"l2\": [\n" +
-                "\t\t\t        {\n" +
-                "\t\t\t          \"label\": { \"time\": 1.5, \"length\": 10 },\n" +
-                "\t\t\t          \"dest\": \"l4\"\n" +
-                "\t\t\t        }\n" +
-                "\t\t\t    ],\n" +
-                "\t\t\t    \"l3\": [\n" +
-                "\t\t\t        {\n" +
-                "\t\t\t          \"label\": { \"time\": 1.5, \"length\": 10 },\n" +
-                "\t\t\t          \"dest\": \"l5\"\n" +
-                "\t\t\t        }\n" +
-                "\t\t\t    ],\n" +
-                "\t\t\t    \"l4\": [\n" +
-                "\t\t\t        {\n" +
-                "\t\t\t          \"label\": { \"time\": 1.5, \"length\": 10 },\n" +
-                "\t\t\t          \"dest\": \"l1\"\n" +
-                "\t\t\t        }\n" +
-                "\t\t\t    ],\n" +
-                "\t\t\t    \"l5\": [\n" +
-                "\t\t\t        {\n" +
-                "\t\t\t          \"label\": { \"time\": 1.5, \"length\": 10 },\n" +
-                "\t\t\t          \"dest\": \"l1\"\n" +
-                "\t\t\t        }\n" +
-                "\t\t\t    ]\n" +
-                "\t\t\t}\n" +
-                "\t\t},\n" +
-                "\t\t\t\t{\n" +
-                "\t\t  \"time\": 0.72 , \n" +
-                "\t\t  \"signals\": {\n" +
-                "  \t\t\t\"l1\":  {\"x\": true, \"y\":0.25, \"z\":23, \"name\":\"taxi\"},\n" +
-                "  \t\t\t\"l2\":  {\"x\": true, \"y\":0.25, \"z\":23, \"name\":\"house\"},\n" +
-                "  \t\t\t\"l3\":  {\"x\": true, \"y\":0.25, \"z\":23, \"name\":\"museum\"},\n" +
-                "  \t\t\t\"l4\":  {\"x\": true, \"y\":0.25, \"z\":23, \"name\":\"stop\"},\n" +
-                "  \t\t\t\"l5\":  {\"x\": true, \"y\":0.25, \"z\":23, \"name\":\"start\"}\n" +
-                "\t\t  },\n" +
-                "\t\t\t\"edges\": {\n" +
-                "\t\t\t    \"l1\": [\n" +
-                "\t\t\t        {\n" +
-                "\t\t\t          \"label\": { \"time\": 1.5, \"length\": 10 },\n" +
-                "\t\t\t          \"dest\": \"l2\"\n" +
-                "\t\t\t        },\n" +
-                "\t\t\t        {\n" +
-                "\t\t\t          \"label\": { \"time\": 2.5, \"length\": 15 },\n" +
-                "\t\t\t          \"dest\": \"l3\"\n" +
-                "\t\t\t        }\n" +
-                "\t\t\t    ],\n" +
-                "\t\t\t    \"l2\": [\n" +
-                "\t\t\t        {\n" +
-                "\t\t\t          \"label\": { \"time\": 1.5, \"length\": 10 },\n" +
-                "\t\t\t          \"dest\": \"l4\"\n" +
-                "\t\t\t        }\n" +
-                "\t\t\t    ],\n" +
-                "\t\t\t    \"l3\": [\n" +
-                "\t\t\t        {\n" +
-                "\t\t\t          \"label\": { \"time\": 1.5, \"length\": 10 },\n" +
-                "\t\t\t          \"dest\": \"l5\"\n" +
-                "\t\t\t        }\n" +
-                "\t\t\t    ],\n" +
-                "\t\t\t    \"l4\": [\n" +
-                "\t\t\t        {\n" +
-                "\t\t\t          \"label\": { \"time\": 1.5, \"length\": 10 },\n" +
-                "\t\t\t          \"dest\": \"l1\"\n" +
-                "\t\t\t        }\n" +
-                "\t\t\t    ],\n" +
-                "\t\t\t    \"l5\": [\n" +
-                "\t\t\t        {\n" +
-                "\t\t\t          \"label\": { \"time\": 1.5, \"length\": 10 },\n" +
-                "\t\t\t          \"dest\": \"l1\"\n" +
-                "\t\t\t        }\n" +
-                "\t\t\t    ]\n" +
-                "\t\t\t}\n" +
-                "\t\t},\n" +
-                "\t\t\t\t{\n" +
-                "\t\t  \"time\": 1.25 , \n" +
-                "\t\t  \"signals\": {\n" +
-                "  \t\t\t\"l1\":  {\"x\": true, \"y\":0.25, \"z\":23, \"name\":\"taxi\"},\n" +
-                "  \t\t\t\"l2\":  {\"x\": true, \"y\":0.25, \"z\":23, \"name\":\"house\"},\n" +
-                "  \t\t\t\"l3\":  {\"x\": true, \"y\":0.25, \"z\":23, \"name\":\"museum\"},\n" +
-                "  \t\t\t\"l4\":  {\"x\": true, \"y\":0.25, \"z\":23, \"name\":\"stop\"},\n" +
-                "  \t\t\t\"l5\":  {\"x\": true, \"y\":0.25, \"z\":23, \"name\":\"start\"}\n" +
-                "\t\t  },\n" +
-                "\t\t\t\"edges\": {\n" +
-                "\t\t\t    \"l1\": [\n" +
-                "\t\t\t        {\n" +
-                "\t\t\t          \"label\": { \"time\": 1.5, \"length\": 10 },\n" +
-                "\t\t\t          \"dest\": \"l2\"\n" +
-                "\t\t\t        },\n" +
-                "\t\t\t        {\n" +
-                "\t\t\t          \"label\": { \"time\": 2.5, \"length\": 15 },\n" +
-                "\t\t\t          \"dest\": \"l3\"\n" +
-                "\t\t\t        }\n" +
-                "\t\t\t    ],\n" +
-                "\t\t\t    \"l2\": [\n" +
-                "\t\t\t        {\n" +
-                "\t\t\t          \"label\": { \"time\": 1.5, \"length\": 10 },\n" +
-                "\t\t\t          \"dest\": \"l4\"\n" +
-                "\t\t\t        }\n" +
-                "\t\t\t    ],\n" +
-                "\t\t\t    \"l3\": [\n" +
-                "\t\t\t        {\n" +
-                "\t\t\t          \"label\": { \"time\": 1.5, \"length\": 10 },\n" +
-                "\t\t\t          \"dest\": \"l5\"\n" +
-                "\t\t\t        }\n" +
-                "\t\t\t    ],\n" +
-                "\t\t\t    \"l4\": [\n" +
-                "\t\t\t        {\n" +
-                "\t\t\t          \"label\": { \"time\": 1.5, \"length\": 10 },\n" +
-                "\t\t\t          \"dest\": \"l1\"\n" +
-                "\t\t\t        }\n" +
-                "\t\t\t    ],\n" +
-                "\t\t\t    \"l5\": [\n" +
-                "\t\t\t        {\n" +
-                "\t\t\t          \"label\": { \"time\": 1.5, \"length\": 10 },\n" +
-                "\t\t\t          \"dest\": \"l1\"\n" +
-                "\t\t\t        }\n" +
-                "\t\t\t    ]\n" +
-                "\t\t\t}\n" +
-                "\t\t},\n" +
-                "\t\t\t\t{\n" +
-                "\t\t  \"time\": 2.1 , \n" +
-                "\t\t  \"signals\": {\n" +
-                "  \t\t\t\"l1\":  {\"x\": true, \"y\":0.25, \"z\":23, \"name\":\"taxi\"},\n" +
-                "  \t\t\t\"l2\":  {\"x\": true, \"y\":0.25, \"z\":23, \"name\":\"house\"},\n" +
-                "  \t\t\t\"l3\":  {\"x\": true, \"y\":0.25, \"z\":23, \"name\":\"museum\"},\n" +
-                "  \t\t\t\"l4\":  {\"x\": true, \"y\":0.25, \"z\":23, \"name\":\"stop\"},\n" +
-                "  \t\t\t\"l5\":  {\"x\": true, \"y\":0.25, \"z\":23, \"name\":\"start\"}\n" +
-                "\t\t  },\n" +
-                "\t\t\t\"edges\": {\n" +
-                "\t\t\t    \"l1\": [\n" +
-                "\t\t\t        {\n" +
-                "\t\t\t          \"label\": { \"time\": 1.5, \"length\": 10 },\n" +
-                "\t\t\t          \"dest\": \"l2\"\n" +
-                "\t\t\t        },\n" +
-                "\t\t\t        {\n" +
-                "\t\t\t          \"label\": { \"time\": 2.5, \"length\": 15 },\n" +
-                "\t\t\t          \"dest\": \"l3\"\n" +
-                "\t\t\t        }\n" +
-                "\t\t\t    ],\n" +
-                "\t\t\t    \"l2\": [\n" +
-                "\t\t\t        {\n" +
-                "\t\t\t          \"label\": { \"time\": 1.5, \"length\": 10 },\n" +
-                "\t\t\t          \"dest\": \"l4\"\n" +
-                "\t\t\t        }\n" +
-                "\t\t\t    ],\n" +
-                "\t\t\t    \"l3\": [\n" +
-                "\t\t\t        {\n" +
-                "\t\t\t          \"label\": { \"time\": 1.5, \"length\": 10 },\n" +
-                "\t\t\t          \"dest\": \"l5\"\n" +
-                "\t\t\t        }\n" +
-                "\t\t\t    ],\n" +
-                "\t\t\t    \"l4\": [\n" +
-                "\t\t\t        {\n" +
-                "\t\t\t          \"label\": { \"time\": 1.5, \"length\": 10 },\n" +
-                "\t\t\t          \"dest\": \"l1\"\n" +
-                "\t\t\t        }\n" +
-                "\t\t\t    ],\n" +
-                "\t\t\t    \"l5\": [\n" +
-                "\t\t\t        {\n" +
-                "\t\t\t          \"label\": { \"time\": 1.5, \"length\": 10 },\n" +
-                "\t\t\t          \"dest\": \"l1\"\n" +
-                "\t\t\t        }\n" +
-                "\t\t\t    ]\n" +
-                "\t\t\t}\n" +
-                "\t\t}\n" +
-                "\n" +
-                "\t]\n" +
-                "\n" +
-                "\n" +
-                "}\n";
-
-        SpatioTemporalSignalWrapper deserialize = Deserializer.SPATIO_TEMPORAL_SIGNAL.deserialize(json);
-        System.out.println(deserialize.getSpatioTemporalSignal());
-
-
+        try (InputStream inputStream = DeserializerTest.class.getClassLoader().getResourceAsStream("eu/quanticol/moonlight/io/json/json_variable_location_service.json")) {
+            String json = IOUtils.toString(inputStream);
+            SpatioTemporalSignalWrapper deserialize = Deserializer.SPATIO_TEMPORAL_SIGNAL.deserialize(json);
+            SpatioTemporalSignal spatioTemporalSignal = deserialize.getSpatioTemporalSignal();
+        } catch (IOException e) {
+            fail(e.getMessage());
+        }
     }
 }

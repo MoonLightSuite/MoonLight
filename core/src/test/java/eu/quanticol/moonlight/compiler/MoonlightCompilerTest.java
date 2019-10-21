@@ -1,8 +1,7 @@
 package eu.quanticol.moonlight.compiler;
 
-import org.junit.jupiter.api.Test;
-
 import eu.quanticol.moonlight.MoonLightScript;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
@@ -13,7 +12,7 @@ class MoonlightCompilerTest {
 
     @Test
     void testGetIstance() throws ReflectiveOperationException, IOException {
-    	MoonlightCompiler comp = new MoonlightCompiler();
+        MoonlightCompiler comp = new MoonlightCompiler();
         String source = "package eu.quanticol.moonlight.test;\n" +
                 "import eu.quanticol.moonlight.compiler.TestLocal;"
                 + "\n" +
@@ -26,25 +25,25 @@ class MoonlightCompilerTest {
 
     @Test
     void testLoadScript() throws ReflectiveOperationException, IOException {
-    	MoonlightCompiler comp = new MoonlightCompiler();
+        MoonlightCompiler comp = new MoonlightCompiler();
         String source = "package eu.quanticol.moonlight.test;\n" +
                 "import eu.quanticol.moonlight.MoonLightScript;"
                 + "\n" +
                 "public class TestScript implements MoonLightScript {  "
-                + 
-                "   public void monitor( String label, String inputFile , String outputFile ) {}\n" + 
-                "	\n" + 
-                "	public String[] getMonitors() { return null; } " + 
-                "	\n" + 
+                +
+                "   public void monitor( String label, String inputFile , String outputFile ) {}\n" +
+                "	\n" +
+                "	public String[] getMonitors() { return null; } " +
+                "	\n" +
                 "	public String getInfo( String monitor ) { return \"\"; }"
                 + "}";
 
         MoonLightScript instance = comp.getIstance("eu.quanticol.moonlight.test", "TestScript", source, MoonLightScript.class);
 
-        assertNotNull( instance );
+        assertNotNull(instance);
     }
 
-    
+
 //    @Test
 //    void testCompileMoonLightClasses() {
 //    	String source = "package eu.quanticol.moonlight.compiler;\n" + 
